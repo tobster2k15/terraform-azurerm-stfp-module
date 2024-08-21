@@ -182,6 +182,7 @@ resource "azurerm_storage_account_local_user" "users" {
       description = ssh_authorized_key.value.description
     }
   }
+}
 
 resource "tls_private_key" "sftp_users_keys" {
   for_each = local.sftp_users_with_ssh_key_enabled
