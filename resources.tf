@@ -1,13 +1,13 @@
 resource "azurerm_resource_group" "myrg_shd" {
   name     = local.rg_name
-  location = var.region_prefix_map
+  location = var.region
   tags     = var.tags
 }
 
 resource "azurerm_resource_group" "myrg_vnet" {
   count    = var.private_endpoint_enabled ? 1 : 0
   name     = local.rg_vnet_name
-  location = var.region_prefix_map
+  location = var.region
   tags     = var.tags
 }
 
