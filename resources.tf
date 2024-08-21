@@ -184,7 +184,7 @@ resource "azurerm_storage_account_local_user" "users" {
   }
 }
 
-resource "tls_private_key" "sftp_users_keys" {
+resource "tls_private_key" "users_keys" {
   for_each = local.sftp_users_with_ssh_key_enabled
 
   algorithm = "RSA"
