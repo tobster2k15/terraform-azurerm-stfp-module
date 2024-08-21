@@ -101,6 +101,13 @@ variable "st_replication" {
   type        = string
   default     = "LRS"
 }
+
+variable "st_container_name" {
+  description = "Name of the storage container"
+  type        = string
+  default     = "default"
+}
+
 ### End Storage Account Variables ###
 variable "users" {
   description = "List of local SFTP user objects."
