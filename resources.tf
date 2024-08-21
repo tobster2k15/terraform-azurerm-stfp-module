@@ -114,7 +114,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "filelink" {
   lifecycle { ignore_changes = [tags] }
 }
 
-resource "azurerm_storage_account_local_user" "local_user" {
+resource "azurerm_storage_account_local_user" "users" {
   for_each             = local.users
   name                 = each.key
   storage_account_id   = azurerm_storage_account.storage.id
