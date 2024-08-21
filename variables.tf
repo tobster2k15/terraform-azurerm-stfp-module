@@ -19,13 +19,25 @@ variable "environment" {
 
 variable "region" {
   type        = string
-  description = "The desired Azure region for the pool. See also var.region_prefix_map."
+  description = "The Azure region where the resources will be deployed."
   validation {
     condition = anytrue([
-      lower(var.region) == "ne",
-      lower(var.region) == "we"
+      lower(var.region) == "northcentralus",
+      lower(var.region) == "southcentralus",
+      lower(var.region) == "westcentral",
+      lower(var.region) == "centralus",
+      lower(var.region) == "westus",
+      lower(var.region) == "eastus",
+      lower(var.region) == "northeurope",
+      lower(var.region) == "westeurope",
+      lower(var.region) == "norwayeast",
+      lower(var.region) == "norwaywest",
+      lower(var.region) == "swedencentral",
+      lower(var.region) == "switzerlandnorth",
+      lower(var.region) == "uksouth",
+      lower(var.region) == "ukwest"
     ])
-    error_message = "Please select one of the approved regions:ne(northeurope) or we (westeurope)."
+    error_message = "Please select one of the approved regions: northcentralus, southcentralus, westcentral, centralus, westus, eastus, northeurope, westeurope, norwayeast, norwaywest, swedencentral, switzerlandnorth, uksouth, or ukwest."
   }
 }
 
@@ -39,8 +51,20 @@ variable "region_prefix_map" {
   type        = map(any)
   description = "A list of prefix strings to concat in locals. Can be replaced or appended."
   default = {
-    westeurope       = "we"
-    northeurope      = "ne"
+    northcentralus   = "NCU"
+    southcentralus   = "SCU"
+    westcentral      = "WCU"
+    centralus        = "USC"
+    westus           = "USW"
+    eastus           = "USE"
+    northeurope      = "NEU"
+    westeurope       = "WEU"
+    norwayeast       = "NWE"
+    norwaywest       = "NWN"
+    swedencentral    = "SWC"
+    switzerlandnorth = "SLN"
+    uksouth          = "UKS"
+    ukwest           = "UKW"
   }
 }
 ### End Naming Variables ###
