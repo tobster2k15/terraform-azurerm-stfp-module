@@ -114,43 +114,96 @@ resource "azurerm_private_dns_zone_virtual_network_link" "filelink" {
   lifecycle { ignore_changes = [tags] }
 }
 
+# resource "azurerm_storage_account_local_user" "users" {
+#   for_each             = local.users
+#   name                 = each.key
+#   storage_account_id   = azurerm_storage_account.storage.id
+#   ssh_key_enabled      = each.value.ssh_key_enabled
+#   ssh_password_enabled = each.value.ssh_password_enabled
+#   home_directory       = coalesce(each.value.mycontainer, each.value.permissions_scopes[0].target_container)
+#   depends_on           = [azurerm_storage_account.storage, azurerm_storage_container.mycontainer]
+#   dynamic "permission_scope" {
+#     for_each = each.value.permissions_scopes
+#     content {
+#       service       = "blob"
+#       resource_name = permission_scope.value.target_container
+#       permissions = {
+#         create = contains(permission_scope.value.permissions_scopes, "Create") || contains(permission_scope.value.permissions_scopes, "All")
+#         delete = contains(permission_scope.value.permissions_scopes, "Delete") || contains(permission_scope.value.permissions_scopes, "All")
+#         list   = contains(permission_scope.value.permissions_scopes, "List")   || contains(permission_scope.value.permissions_scopes, "All")
+#         read   = contains(permission_scope.value.permissions_scopes, "Read")   || contains(permission_scope.value.permissions_scopes, "All")
+#         write  = contains(permission_scope.value.permissions_scopes, "Write")  || contains(permission_scope.value.permissions_scopes, "All")
+#       }
+#     }
+#   }
+# }
+
 resource "azurerm_storage_account_local_user" "users" {
-  for_each             = local.users
-  name                 = each.key
-  storage_account_id   = azurerm_storage_account.storage.id
+  for_each = local.sftp_users
+
+  name = each.key
+
+  storage_account_id = module.storage_account.storage_account_id
+
   ssh_key_enabled      = each.value.ssh_key_enabled
   ssh_password_enabled = each.value.ssh_password_enabled
-  home_directory       = coalesce(each.value.mycontainer, each.value.permissions_scopes[0].target_container)
-  depends_on           = [azurerm_storage_account.storage, azurerm_storage_container.mycontainer]
+
+  # The first container in the `permissions_scopes` list will always be the default home directory
+  home_directory = coalesce(each.value.home_directory, each.value.permissions_scopes[0].target_container)
+
+  # https://learn.microsoft.com/en-us/azure/storage/blobs/secure-file-transfer-protocol-support#container-permissions
   dynamic "permission_scope" {
     for_each = each.value.permissions_scopes
     content {
       service       = "blob"
       resource_name = permission_scope.value.target_container
-      permissions = {
-        create = contains(permission_scope.value.permissions_scopes, "Create") || contains(permission_scope.value.permissions_scopes, "All")
-        delete = contains(permission_scope.value.permissions_scopes, "Delete") || contains(permission_scope.value.permissions_scopes, "All")
-        list   = contains(permission_scope.value.permissions_scopes, "List")   || contains(permission_scope.value.permissions_scopes, "All")
-        read   = contains(permission_scope.value.permissions_scopes, "Read")   || contains(permission_scope.value.permissions_scopes, "All")
-        write  = contains(permission_scope.value.permissions_scopes, "Write")  || contains(permission_scope.value.permissions_scopes, "All")
+      permissions {
+        create = contains(permission_scope.value.permissions, "All") || contains(permission_scope.value.permissions, "Create")
+        delete = contains(permission_scope.value.permissions, "All") || contains(permission_scope.value.permissions, "Delete")
+        list   = contains(permission_scope.value.permissions, "All") || contains(permission_scope.value.permissions, "List")
+        read   = contains(permission_scope.value.permissions, "All") || contains(permission_scope.value.permissions, "Read")
+        write  = contains(permission_scope.value.permissions, "All") || contains(permission_scope.value.permissions, "Write")
       }
     }
   }
-}
 
-# resource "azurerm_storage_account_local_user" "local_user" {
-#   name                 = "user1"
-#   storage_account_id   = azurerm_storage_account.storage.id
-#   ssh_key_enabled      = false
-#   ssh_password_enabled = true
-#   home_directory       = azurerm_storage_container.mycontainer.name
-#   depends_on           = [azurerm_storage_account.storage, azurerm_storage_container.mycontainer]
-#   permission_scope {
-#     permissions {
-#       read   = true
-#       create = true
-#     }
-#     service       = "blob"
-#     resource_name = azurerm_storage_container.mycontainer.name
-#   }
-# }
+  dynamic "ssh_authorized_key" {
+    for_each = each.value.ssh_key_enabled ? ["auto"] : []
+    content {
+      key         = tls_private_key.sftp_users_keys[each.key].public_key_openssh
+      description = "Automatically generated by Terraform"
+    }
+  }
+
+  dynamic "ssh_authorized_key" {
+    for_each = each.value.ssh_key_enabled ? each.value.ssh_authorized_keys : []
+    content {
+      key         = ssh_authorized_key.value.key
+      description = ssh_authorized_key.value.description
+    }
+  }
+
+  lifecycle {
+    precondition {
+      condition = alltrue([
+        for scope in each.value.permissions_scopes : contains(keys(module.storage_account.storage_blob_containers), scope.target_container)
+      ])
+      error_message = format("At least one target container does not exist (or is being deleted) for user %s.", each.key)
+    }
+    precondition {
+      condition = alltrue(flatten([
+        for scope in each.value.permissions_scopes : [
+          for permission in scope.permissions : contains(local.sftp_users_permissions, permission)
+        ]
+      ]))
+      error_message = format("One or more permissions are wrong for user %s. Allowed values in the list are: %s.", each.key, join(", ", [
+        for permission in local.sftp_users_permissions : "'${permission}'"
+      ]))
+    }
+    # Required because otherwise Terraform will apply successfully but the SFTP connection will fail when using the default SFTP connection command line
+    postcondition {
+      condition     = contains(self.permission_scope[*].resource_name, split("/", self.home_directory)[0])
+      error_message = format("The home directory of user %s does not refer to any container in its permissions scopes.", self.name)
+    }
+  }
+}
