@@ -3,7 +3,7 @@ locals {
   rg_name = "rg-${var.usecase}-${var.environment}-001"
 
   nic_name     = "nic-${var.usecase}-${var.environment}-"
-  rg_vnet_name = "rg-vnet-${var.usecase}-${var.environment}-${var.region_prefix_map}-001"
+  rg_vnet_name = "rg-vnet-${var.usecase}-${var.environment}-${var.region_prefix_map[var.region]}-001"
   vnet_name    = "vnet-${var.usecase}-${var.environment}-${var.region}-001"
 
   snet_name_shd = "snet-${var.usecase}-shd-001"

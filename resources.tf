@@ -149,7 +149,7 @@ resource "azurerm_storage_account_local_user" "users" {
   ssh_password_enabled = each.value.ssh_password_enabled
 
   # The first container in the `permissions_scopes` list will always be the default home directory
-  home_directory = coalesce(each.value.mycontainer, each.value.permissions_scopes[0].target_container)
+  home_directory = coalesce(each.value.home_directory, each.value.permissions_scopes[0].target_container)
 
   # https://learn.microsoft.com/en-us/azure/storage/blobs/secure-file-transfer-protocol-support#container-permissions
   dynamic "permission_scope" {
