@@ -11,7 +11,7 @@ locals {
   pep_name      = "pep-${var.usecase}-shd-${var.region}-001"
   psc_name      = "psc-${var.usecase}-${var.environment}-${var.region}-001"
   rt_name       = "rt-${var.usecase}-default"
-  st_name       = "st${var.usecase}vdi${var.environment}001"
+  st_name       = "st${var.usecase}sftp${var.environment}001"
 }
 
 locals {

@@ -138,8 +138,8 @@ variable "users" {
   type = list(object({
     name                 = string
     home_directory       = optional(string)
-    ssh_key_enabled      = optional(bool, true)
-    ssh_password_enabled = optional(bool)
+    ssh_key_enabled      = optional(bool)
+    ssh_password_enabled = optional(bool, true)
     permissions_scopes = list(object({
       target_container = string
       permissions      = optional(list(string), ["All"])
