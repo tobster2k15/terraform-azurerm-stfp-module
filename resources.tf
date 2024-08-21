@@ -183,31 +183,6 @@ resource "azurerm_storage_account_local_user" "users" {
     }
   }
 
-  lifecycle {
-    precondition {
-      condition = alltrue([
-        for scope in each.value.permissions_scopes : contains(keys(azurerm_storage_account.mycontainer), scope.target_container)
-      ])
-      error_message = format("At least one target container does not exist (or is being deleted) for user %s.", each.key)
-    }
-    precondition {
-      condition = alltrue(flatten([
-        for scope in each.value.permissions_scopes : [
-          for permission in scope.permissions : contains(local.users_permissions, permission)
-        ]
-      ]))
-      error_message = format("One or more permissions are wrong for user %s. Allowed values in the list are: %s.", each.key, join(", ", [
-        for permission in local.users_permissions : "'${permission}'"
-      ]))
-    }
-    # Required because otherwise Terraform will apply successfully but the SFTP connection will fail when using the default SFTP connection command line
-    postcondition {
-      condition     = contains(self.permission_scope[*].resource_name, split("/", self.home_directory)[0])
-      error_message = format("The home directory of user %s does not refer to any container in its permissions scopes.", self.name)
-    }
-  }
-}
-
 resource "tls_private_key" "sftp_users_keys" {
   for_each = local.sftp_users_with_ssh_key_enabled
 

@@ -20,6 +20,10 @@ locals {
   users = {
     for user in var.users : user.name => user
   }
+  
+  sftp_users_with_ssh_key_enabled = {
+    for key, value in local.users : key => value if value.ssh_key_enabled
+  }
 
   users_permissions = [
     "All",
@@ -36,8 +40,8 @@ locals {
       name     = value.name
       password = value.password
 
-      # auto_generated_private_key = try(tls_private_key.users_keys[key].private_key_pem, "")
-      # auto_generated_public_key  = try(tls_private_key.users_keys[key].public_key_openssh, "")
+      auto_generated_private_key = try(tls_private_key.users_keys[key].private_key_pem, "")
+      auto_generated_public_key  = try(tls_private_key.users_keys[key].public_key_openssh, "")
     }
 
 
