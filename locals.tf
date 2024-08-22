@@ -6,12 +6,14 @@ locals {
   rg_vnet_name = "rg-vnet-${var.usecase}-${var.environment}-${var.region_prefix_map[var.region]}-001"
   vnet_name    = "vnet-${var.usecase}-${var.environment}-${var.region}-001"
 
-  snet_name_shd = "snet-${var.usecase}-shd-001"
-  nsg_name      = "nsg-${var.usecase}-${var.environment}-${var.region}-001"
-  pep_name      = "pep-${var.usecase}-shd-${var.region}-001"
-  psc_name      = "psc-${var.usecase}-${var.environment}-${var.region}-001"
-  rt_name       = "rt-${var.usecase}-default"
-  st_name       = "st${var.usecase}sftp${var.environment}001"
+  snet_name_shd            = "snet-${var.usecase}-shd-001"
+  nsg_name                 = "nsg-${var.usecase}-${var.environment}-${var.region}-001"
+  pep_name                 = "pep-${var.usecase}-shd-${var.region}-001"
+  psc_name                 = "psc-${var.usecase}-${var.environment}-${var.region}-001"
+  rt_name                  = "rt-${var.usecase}-default"
+  st_name                  = "st${var.usecase}sftp${var.environment}001"
+  automation_name          = "aa-${var.usecase}-${var.environment}-001"
+  automation_schedule_name = "as-${var.usecase}-${var.environment}"
 }
 
 locals {
@@ -20,7 +22,7 @@ locals {
   users = {
     for user in var.users : user.name => user
   }
-  
+
   sftp_users_with_ssh_key_enabled = {
     for key, value in local.users : key => value if value.ssh_key_enabled
   }
@@ -46,4 +48,8 @@ locals {
 
 
   }
+}
+
+locals {
+  current_time = timestamp() + 2
 }

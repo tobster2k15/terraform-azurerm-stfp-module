@@ -51,20 +51,20 @@ variable "region_prefix_map" {
   type        = map(any)
   description = "A list of prefix strings to concat in locals. Can be replaced or appended."
   default = {
-    northcentralus   = "NCU"
-    southcentralus   = "SCU"
-    westcentral      = "WCU"
-    centralus        = "USC"
-    westus           = "USW"
-    eastus           = "USE"
-    northeurope      = "NEU"
-    westeurope       = "WEU"
-    norwayeast       = "NWE"
-    norwaywest       = "NWN"
-    swedencentral    = "SWC"
-    switzerlandnorth = "SLN"
-    uksouth          = "UKS"
-    ukwest           = "UKW"
+    northcentralus   = "ncu"
+    southcentralus   = "scu"
+    westcentral      = "wcu"
+    centralus        = "usc"
+    westus           = "usw"
+    eastus           = "use"
+    northeurope      = "eun"
+    westeurope       = "euw"
+    norwayeast       = "nwe"
+    norwaywest       = "nwn"
+    swedencentral    = "swc"
+    switzerlandnorth = "sln"
+    uksouth          = "uks"
+    ukwest           = "ukw"
   }
 }
 ### End Naming Variables ###
@@ -151,3 +151,74 @@ variable "users" {
   }))
 }
 
+### Automation Account Variables ### 
+
+variable "automation_enabled" {
+  description = "Enable automation account"
+  type        = bool
+  default     = false
+}
+
+# https://docs.microsoft.com/en-us/rest/api/maps/timezone/gettimezoneenumwindows
+variable "region_timezone_map" {
+  description = "Adds a timezone to chosen region, works just as the naming process."
+  type        = map(any)
+  default     = {
+    northcentralus   = "America/North_Dakota/Center"
+    southcentralus   = "Atlantic/South_Georgia"
+    westcentral      = "America/St_Thomas"
+    centralus        = "America/Chicago"
+    westus           = "America/St_Thomas"
+    eastus           = "America/Cayenne"
+    northeurope      = "Europe/Dublin"
+    westeurope       = "Europe/Amsterdam"
+    norwayeast       = "Europe/Oslo"
+    norwaywest       = "Europe/Oslo"
+    swedencentral    = "Europe/Oslo"
+    switzerlandnorth = "Europe/Vienna"
+    uksouth          = "Europe/london"
+    ukwest           = "Europe/London"
+  }
+}
+
+variable "sftp_enable_frequency" {
+  description = "Enable frequency"
+  type        = string
+  default     = "Day"
+}
+
+variable "interval" {
+  description = "Reoccurance of schedule"
+  type        = string
+  default     = 1
+}
+
+variable "start_time" {
+  description = "Start time, format YYYY-MM-DDTHH:MM:SS+02:00"
+  type        = string
+  default     = null
+}
+
+variable "week_days" {
+  description = "List of Week Days"
+  type        = list(string)
+  default     = null
+}
+
+variable "month_days" {
+  description = "Month days from 1 to 31. -1 for the last day of month."
+  type        = string
+  default     = null
+}
+
+variable "monthly_occurence" {
+  description = "Monthly occurence. Values from 1 to 5. -1 for the last week of the month."
+  type        = string
+  default     = null
+}
+
+variable "month_days_occurence" {
+  description = "Month days occurence"
+  type        = string
+  default     = null
+}

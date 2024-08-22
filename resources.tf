@@ -69,7 +69,7 @@ resource "azurerm_storage_account_network_rules" "stfw" {
   storage_account_id = azurerm_storage_account.storage.id
   default_action     = "Deny"
   bypass             = ["AzureServices"]
-  depends_on = [azurerm_storage_container.mycontainer]
+  depends_on         = [azurerm_storage_container.mycontainer]
 }
 
 resource "azurerm_storage_account" "storage" {
@@ -113,30 +113,6 @@ resource "azurerm_private_dns_zone_virtual_network_link" "filelink" {
 
   lifecycle { ignore_changes = [tags] }
 }
-
-# resource "azurerm_storage_account_local_user" "users" {
-#   for_each             = local.users
-#   name                 = each.key
-#   storage_account_id   = azurerm_storage_account.storage.id
-#   ssh_key_enabled      = each.value.ssh_key_enabled
-#   ssh_password_enabled = each.value.ssh_password_enabled
-#   home_directory       = coalesce(each.value.mycontainer, each.value.permissions_scopes[0].target_container)
-#   depends_on           = [azurerm_storage_account.storage, azurerm_storage_container.mycontainer]
-#   dynamic "permission_scope" {
-#     for_each = each.value.permissions_scopes
-#     content {
-#       service       = "blob"
-#       resource_name = permission_scope.value.target_container
-#       permissions = {
-#         create = contains(permission_scope.value.permissions_scopes, "Create") || contains(permission_scope.value.permissions_scopes, "All")
-#         delete = contains(permission_scope.value.permissions_scopes, "Delete") || contains(permission_scope.value.permissions_scopes, "All")
-#         list   = contains(permission_scope.value.permissions_scopes, "List")   || contains(permission_scope.value.permissions_scopes, "All")
-#         read   = contains(permission_scope.value.permissions_scopes, "Read")   || contains(permission_scope.value.permissions_scopes, "All")
-#         write  = contains(permission_scope.value.permissions_scopes, "Write")  || contains(permission_scope.value.permissions_scopes, "All")
-#       }
-#     }
-#   }
-# }
 
 resource "azurerm_storage_account_local_user" "users" {
   for_each = local.users
@@ -189,4 +165,91 @@ resource "tls_private_key" "users_keys" {
 
   algorithm = "RSA"
   rsa_bits  = 4096
+}
+
+### Optional ### 
+resource "azurerm_automation_account" "automation" {
+  count               = var.automation_enabled == true ? 1 : 0
+  location            = azurerm_resource_group.myrg_shd.location
+  name                = local.automation_name
+  resource_group_name = azurerm_resource_group.myrg_shd.name
+  sku_name            = "Basic"
+  identity {
+    type = "SystemAssigned"
+  }
+}
+
+resource "azurerm_automation_runbook" "sftp_enable" {
+  count                   = var.automation_enabled == true ? 1 : 0
+  automation_account_name = azurerm_automation_account.automation[count.index].name
+  content                 = "Connect-AzAccount\r\n\r\n$resourceGroup = \"{azurerm_resource_group.myrg_shd.name}\"\r\n$storageAccount = \"{azurerm_storage_account.storage.name}\"\r\n\r\naz storage account update -g $resourceGroup -n $storageAccount --enable-sftp true"
+  location                = azurerm_resource_group.myrg_shd.location
+  log_progress            = false
+  log_verbose             = false
+  name                    = "sftp_enable"
+  resource_group_name     = azurerm_resource_group.myrg_shd.name
+  runbook_type            = "PowerShell72"
+  depends_on = [
+    azurerm_automation_account.automation,
+  ]
+}
+
+resource "azurerm_automation_runbook" "sftp_disable" {
+  count                   = var.automation_enabled == true ? 1 : 0
+  automation_account_name = azurerm_automation_account.automation[count.index].name
+  content                 = "Connect-AzAccount\r\n\r\n$resourceGroup = \"{azurerm_resource_group.myrg_shd.name}\"\r\n$storageAccount = \"{azurerm_storage_account.storage.name}\"\r\n\r\naz storage account update -g $resourceGroup -n $storageAccount --enable-sftp false"
+  location                = azurerm_resource_group.myrg_shd.location
+  log_progress            = false
+  log_verbose             = false
+  name                    = "sftp_disable"
+  resource_group_name     = azurerm_resource_group.myrg_shd.name
+  runbook_type            = "PowerShell72"
+  depends_on = [
+    azurerm_automation_account.automation,
+  ]
+}
+
+resource "azurerm_automation_schedule" "sftp_enable" {
+  count                   = var.automation_enabled == true ? 1 : 0
+  name                    = "${local.automation_schedule_name}-on"
+  resource_group_name     = azurerm_resource_group.myrg_shd.name
+  automation_account_name = azurerm_automation_account.automation[count.index].name
+  frequency               = var.sftp_enable_frequency
+  interval                = var.interval
+  timezone                = var.region_timezone_map[var.region]
+  start_time              = var.start_time == null ? local.current_time : null
+  expiry_time             = var.expiry_time != null ? var.expiry_time : null
+  description             = "Start of SFTP Cycle"
+  week_days               = var.week_days != null ? var.week_days : null
+  month_days              = var.month_days != null ? var.month_days : null
+  dynamic "monthly_occurence" {
+    count = var.month_days != null ? var.monthly_occurence : null
+    content {
+      occurence = var.monthly_occurence
+      day       = var.month_days_occurence
+    }
+  }
+
+}
+
+resource "azurerm_automation_schedule" "sftp_disable" {
+  count                   = var.automation_enabled == true ? 1 : 0
+  name                    = "${local.automation_schedule_name}-off"
+  resource_group_name     = azurerm_resource_group.myrg_shd[count.index].name
+  automation_account_name = azurerm_automation_account.sftp_enable[count.index].name
+  frequency               = var.sftp_enable_frequency
+  interval                = var.interval
+  timezone                = var.region_timezone_map[var.region]
+  start_time              = var.start_time == null ? local.current_time : null
+  expiry_time             = var.expiry_time != null ? var.expiry_time : null
+  description             = "End of SFTP Cycle"
+  week_days               = var.week_days != null ? var.week_days : null
+  month_days              = var.month_days != null ? var.month_days : null
+  dynamic "monthly_occurence" {
+    count = var.month_days != null ? var.monthly_occurence : null
+    content {
+      occurence = var.monthly_occurence
+      day       = var.month_days_occurence
+    }
+  }
 }
