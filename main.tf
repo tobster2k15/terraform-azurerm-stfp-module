@@ -11,7 +11,3 @@ terraform {
 provider "azurerm" {
   features {}
 }
-
-provider "time" {
-  source = "hashicorp/time"
-}
