@@ -207,7 +207,7 @@ variable "week_days" {
 
 variable "month_days" {
   description = "Month days from 1 to 31. -1 for the last day of month."
-  type        = string
+  type        = number
   default     = null
 }
 

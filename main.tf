@@ -12,4 +12,6 @@ provider "azurerm" {
   features {}
 }
 
-provider "time" {}
+provider "time" {
+  source = "hashicorp/time"
+}
