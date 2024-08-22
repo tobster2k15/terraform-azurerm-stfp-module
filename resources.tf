@@ -236,7 +236,7 @@ resource "azurerm_automation_schedule" "sftp_disable" {
   count                   = var.automation_enabled == true ? 1 : 0
   name                    = "${local.automation_schedule_name}-off"
   resource_group_name     = azurerm_resource_group.myrg_shd[count.index].name
-  automation_account_name = azurerm_automation_account.sftp_enable[count.index].name
+  automation_account_name = azurerm_automation_account.automation[count.index].name
   frequency               = var.sftp_enable_frequency
   interval                = var.interval
   timezone                = var.region_timezone_map[var.region]

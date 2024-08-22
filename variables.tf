@@ -41,12 +41,6 @@ variable "region" {
   }
 }
 
-variable "resource_group_location" {
-  description = "Resource Group Location"
-  type        = string
-  default     = ""
-}
-
 variable "region_prefix_map" {
   type        = map(any)
   description = "A list of prefix strings to concat in locals. Can be replaced or appended."
@@ -182,19 +176,25 @@ variable "region_timezone_map" {
 }
 
 variable "sftp_enable_frequency" {
-  description = "Enable frequency"
+  description = "Enable frequency. Options are OneTime, Day, Hour, Week or Month"
+  type        = string
+  default     = "OneTime"
+}
+
+variable "interval" {
+  description = "Reoccurance of schedule. Options are Day, Hour, Week or Month."
   type        = string
   default     = "Day"
 }
 
-variable "interval" {
-  description = "Reoccurance of schedule"
-  type        = string
-  default     = 1
-}
-
 variable "start_time" {
   description = "Start time, format YYYY-MM-DDTHH:MM:SS+02:00"
+  type        = string
+  default     = null
+}
+
+variable "expiry_time"{
+  description = "Expiry time, format YYYY-MM-DDTHH:MM:SS+02:00"
   type        = string
   default     = null
 }
