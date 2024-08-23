@@ -225,7 +225,7 @@ resource "azurerm_automation_schedule" "sftp_enable_daily" {
   frequency               = var.sftp_enable_frequency
   interval                = var.interval
   timezone                = var.region_timezone_map[var.region]
-  start_time              = var.start_time == null ? "${local.update_date}T${local.update_time}:00+02:00" : null
+  start_time              = var.start_time == null ? "${local.update_date}T${local.update_time_start}:00+02:00" : null
   expiry_time             = var.expiry_time != null ? var.expiry_time : null
   description             = "Start of SFTP Cycle"
   week_days               = var.week_days != null ? var.week_days : null
@@ -240,7 +240,7 @@ resource "azurerm_automation_schedule" "sftp_disable_daily" {
   frequency               = var.sftp_enable_frequency
   interval                = var.interval
   timezone                = var.region_timezone_map[var.region]
-  start_time              = var.start_time == null ? "${local.update_date}T${local.update_time}:00+02:00" : null
+  start_time              = var.start_time == null ? "${local.update_date}T${local.update_time_stop}:00+02:00" : null
   expiry_time             = var.expiry_time != null ? var.expiry_time : null
   description             = "End of SFTP Cycle"
   week_days               = var.week_days != null ? var.week_days : null
