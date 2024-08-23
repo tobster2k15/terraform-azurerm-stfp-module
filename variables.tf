@@ -222,3 +222,36 @@ variable "month_days_occurence" {
   type        = string
   default     = null
 }
+
+variable "region_timezone_map_locals" {
+  description = "Adds a timezone to chosen region for locals timing, works just as the naming process."
+  type        = map(any)
+  default     = {
+    northcentralus   = "CT"
+    southcentralus   = "GMT-7"
+    westcentral      = "GMT-6"
+    centralus        = "UTC-5"
+    westus           = "PST"
+    eastus           = "ET"
+    northeurope      = "UTC"
+    westeurope       = "GMT+1"
+    norwayeast       = "UTC+1"
+    norwaywest       = "UTC+1"
+    swedencentral    = "UTC+1"
+    switzerlandnorth = "UTC+1"
+    uksouth          = "UTC"
+    ukwest           = "UTC"
+  }
+}
+
+variable "schedule_start" {
+  description = "Start time, format HH:MM"
+  type        = string
+  default     = "00:00"
+}
+
+variable "schedule_stop" {
+  description = "Stop time, format HH:MM"
+  type        = string
+  default     = "23:59"
+}
