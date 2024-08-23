@@ -248,7 +248,7 @@ resource "azurerm_automation_job_schedule" "sftp_on" {
   resource_group_name     = azurerm_resource_group.myrg_shd[count.index].name
   automation_account_name = azurerm_automation_account.automation[count.index].name
   runbook_name            = azurerm_automation_runbook.sftp_enable[count.index].name
-  schedule_name           = azurerm_automation_schedule.sftp_enable[count.index].name
+  schedule_name           = azurerm_automation_schedule.sftp_enable_daily[count.index].name
 }
 
 resource "azurerm_automation_job_schedule" "sftp_off" {
@@ -256,5 +256,5 @@ resource "azurerm_automation_job_schedule" "sftp_off" {
   resource_group_name     = azurerm_resource_group.myrg_shd[count.index].name
   automation_account_name = azurerm_automation_account.automation[count.index].name
   runbook_name            = azurerm_automation_runbook.sftp_disable[count.index].name
-  schedule_name           = azurerm_automation_schedule.sftp_disable[count.index].name
+  schedule_name           = azurerm_automation_schedule.sftp_disable_daily[count.index].name
 }
