@@ -190,7 +190,7 @@ resource "azurerm_automation_account" "automation" {
 resource "azurerm_automation_runbook" "sftp_enable" {
   count                   = var.automation_enabled == true ? 1 : 0
   automation_account_name = azurerm_automation_account.automation[count.index].name
-  content                 = "Connect-AzAccount\r\n\r\n$resourceGroup = \"{azurerm_resource_group.myrg_shd.name}\"\r\n$storageAccount = \"{azurerm_storage_account.storage.name}\"\r\n\r\naz storage account update -g $resourceGroup -n $storageAccount --enable-sftp true"
+  content                 = "Connect-AzAccount\r\n\r\n$resourceGroup = \"${azurerm_resource_group.myrg_shd.name}\"\r\n$storageAccount = \"${azurerm_storage_account.storage.name}\"\r\n\r\naz storage account update -g $resourceGroup -n $storageAccount --enable-sftp true"
   location                = azurerm_resource_group.myrg_shd.location
   log_progress            = false
   log_verbose             = false
@@ -205,7 +205,7 @@ resource "azurerm_automation_runbook" "sftp_enable" {
 resource "azurerm_automation_runbook" "sftp_disable" {
   count                   = var.automation_enabled == true ? 1 : 0
   automation_account_name = azurerm_automation_account.automation[count.index].name
-  content                 = "Connect-AzAccount\r\n\r\n$resourceGroup = \"{azurerm_resource_group.myrg_shd.name}\"\r\n$storageAccount = \"{azurerm_storage_account.storage.name}\"\r\n\r\naz storage account update -g $resourceGroup -n $storageAccount --enable-sftp false"
+  content                 = "Connect-AzAccount\r\n\r\n$resourceGroup = \"${azurerm_resource_group.myrg_shd.name}\"\r\n$storageAccount = \"${azurerm_storage_account.storage.name}\"\r\n\r\naz storage account update -g $resourceGroup -n $storageAccount --enable-sftp false"
   location                = azurerm_resource_group.myrg_shd.location
   log_progress            = false
   log_verbose             = false
