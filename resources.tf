@@ -172,6 +172,10 @@ resource "azurerm_private_dns_zone_virtual_network_link" "filelink" {
 ### End Virtual Network (optional) ###
 
 ### Automation Account (optional) ###
+resource "time_offset" "tomorrow" {
+  offset_days = 1
+}
+
 resource "azurerm_automation_account" "automation" {
   count               = var.automation_enabled == true ? 1 : 0
   location            = azurerm_resource_group.myrg_shd.location

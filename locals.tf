@@ -51,5 +51,7 @@ locals {
 }
 
 locals {
-  current_time = timestamp() + 2
+  update_time = "18:00"
+  update_date = substr(time_offset.tomorrow.rfc3339, 0, 10)
+  update_timezone = "UTC"
 }
