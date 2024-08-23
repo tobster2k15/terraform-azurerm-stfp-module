@@ -229,7 +229,6 @@ resource "azurerm_automation_schedule" "sftp_enable" {
       day       = each.month_days_occurence
     }
   }
-
 }
 
 resource "azurerm_automation_schedule" "sftp_disable" {
@@ -246,11 +245,26 @@ resource "azurerm_automation_schedule" "sftp_disable" {
   week_days               = var.week_days != null ? var.week_days : null
   month_days              = var.month_days != null ? var.month_days : null
   dynamic "monthly_occurence" {
-    count = var.month_days != null ? var.monthly_occurence : null
+    for_each = count.index == 0 ? var.monthly_occurence : []
     content {
-      occurence = var.monthly_occurence
-      day       = var.month_days_occurence
+      occurence = each.monthly_occurence
+      day       = each.month_days_occurence
     }
   }
 }
 
+resource "azurerm_automation_job_schedule" "sftp_on" {
+  count                   = var.automation_enabled == true ? 1 : 0
+  resource_group_name     = azurerm_resource_group.myrg_shd[count.index].name
+  automation_account_name = azurerm_automation_account.automation[count.index].name
+  runbook_name            = azurerm_automation_runbook.sftp_enable[count.index].name
+  schedule_name           = azurerm_automation_schedule.sftp_enable[count.index].name
+}
+
+resource "azurerm_automation_job_schedule" "sftp_off" {
+  count                   = var.automation_enabled == true ? 1 : 0
+  resource_group_name     = azurerm_resource_group.myrg_shd[count.index].name
+  automation_account_name = azurerm_automation_account.automation[count.index].name
+  runbook_name            = azurerm_automation_runbook.sftp_disable[count.index].name
+  schedule_name           = azurerm_automation_schedule.sftp_disable[count.index].name
+}
