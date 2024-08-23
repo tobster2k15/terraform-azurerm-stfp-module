@@ -228,7 +228,7 @@ resource "azurerm_automation_schedule" "sftp_enable_daily" {
   start_time              = var.start_time == null ? local.current_time : null
   expiry_time             = var.expiry_time != null ? var.expiry_time : null
   description             = "Start of SFTP Cycle"
-  # week_days               = var.week_days != null ? var.week_days : null
+  week_days               = var.week_days != null ? var.week_days : null
   # month_days              = var.month_days != null ? var.month_days : null
 }
 
@@ -243,7 +243,7 @@ resource "azurerm_automation_schedule" "sftp_disable_daily" {
   start_time              = var.start_time == null ? local.current_time : null
   expiry_time             = var.expiry_time != null ? var.expiry_time : null
   description             = "End of SFTP Cycle"
-  # week_days               = var.week_days != null ? var.week_days : null
+  week_days               = var.week_days != null ? var.week_days : null
   # month_days              = var.month_days != null ? var.month_days : null
 }
 
