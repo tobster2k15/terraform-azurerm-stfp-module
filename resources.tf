@@ -224,14 +224,14 @@ resource "azurerm_automation_schedule" "sftp_enable_daily" {
   start_time              = var.start_time == null ? local.current_time : null
   expiry_time             = var.expiry_time != null ? var.expiry_time : null
   description             = "Start of SFTP Cycle"
-  week_days               = var.week_days != null ? var.week_days : null
+  # week_days               = var.week_days != null ? var.week_days : null
   # month_days              = var.month_days != null ? var.month_days : null
 }
 
 resource "azurerm_automation_schedule" "sftp_disable_daily" {
   count                   = var.automation_enabled == true ? 1 : 0
   name                    = "${local.automation_schedule_name}-off"
-  resource_group_name     = azurerm_resource_group.myrg_shd[count.index].name
+  resource_group_name     = azurerm_resource_group.myrg_shd.name
   automation_account_name = azurerm_automation_account.automation[count.index].name
   frequency               = var.sftp_enable_frequency
   interval                = var.interval
@@ -239,13 +239,13 @@ resource "azurerm_automation_schedule" "sftp_disable_daily" {
   start_time              = var.start_time == null ? local.current_time : null
   expiry_time             = var.expiry_time != null ? var.expiry_time : null
   description             = "End of SFTP Cycle"
-  week_days               = var.week_days != null ? var.week_days : null
+  # week_days               = var.week_days != null ? var.week_days : null
   # month_days              = var.month_days != null ? var.month_days : null
 }
 
 resource "azurerm_automation_job_schedule" "sftp_on" {
   count                   = var.automation_enabled == true ? 1 : 0
-  resource_group_name     = azurerm_resource_group.myrg_shd[count.index].name
+  resource_group_name     = azurerm_resource_group.myrg_shd.name
   automation_account_name = azurerm_automation_account.automation[count.index].name
   runbook_name            = azurerm_automation_runbook.sftp_enable[count.index].name
   schedule_name           = azurerm_automation_schedule.sftp_enable_daily[count.index].name
@@ -253,7 +253,7 @@ resource "azurerm_automation_job_schedule" "sftp_on" {
 
 resource "azurerm_automation_job_schedule" "sftp_off" {
   count                   = var.automation_enabled == true ? 1 : 0
-  resource_group_name     = azurerm_resource_group.myrg_shd[count.index].name
+  resource_group_name     = azurerm_resource_group.myrg_shd.name
   automation_account_name = azurerm_automation_account.automation[count.index].name
   runbook_name            = azurerm_automation_runbook.sftp_disable[count.index].name
   schedule_name           = azurerm_automation_schedule.sftp_disable_daily[count.index].name

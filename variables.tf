@@ -183,8 +183,8 @@ variable "sftp_enable_frequency" {
 
 variable "interval" {
   description = "Reoccurance of schedule. Options are Day, Hour, Week or Month."
-  type        = string
-  default     = "Day"
+  type        = number
+  default     = 1
 }
 
 variable "start_time" {
