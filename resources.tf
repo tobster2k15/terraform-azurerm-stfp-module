@@ -223,7 +223,7 @@ resource "azurerm_automation_schedule" "sftp_enable" {
   week_days               = var.week_days != null ? var.week_days : null
   month_days              = var.month_days != null ? var.month_days : null
   dynamic "monthly_occurence" {
-    for_each = var.month_days != null ? var.monthly_occurence : []
+    for_each = count.index == 0 ? var.monthly_occurence : []
     content {
       occurence = each.monthly_occurence
       day       = each.month_days_occurence
@@ -253,3 +253,4 @@ resource "azurerm_automation_schedule" "sftp_disable" {
     }
   }
 }
+
