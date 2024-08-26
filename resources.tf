@@ -32,6 +32,7 @@ resource "azurerm_storage_account" "storage" {
     delete_retention_policy {
       days = var.retention_days == 0 ? null : var.retention_days
     }
+  }
   identity {
     type = "SystemAssigned"
   }
@@ -40,7 +41,7 @@ resource "azurerm_storage_account" "storage" {
     ignore_changes = [azure_files_authentication]
   }
 }
-}
+
 
 resource "azurerm_storage_container" "mycontainer" {
   name                  = var.st_container_name
