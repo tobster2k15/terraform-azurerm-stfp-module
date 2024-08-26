@@ -1,6 +1,7 @@
 # #Namingconvention: Counter wird bei den einzelnen Namen mit angegeben
 locals {
-  rg_name = "rg-${var.usecase}-${var.environment}-001"
+  rg_name     = "rg-${var.usecase}-${var.environment}-001"
+  rg_name_shd = "rg-${var.usecase}-shd-001"
 
   nic_name     = "nic-${var.usecase}-${var.environment}-"
   rg_vnet_name = "rg-vnet-${var.usecase}-${var.environment}-${var.region_prefix_map[var.region]}-001"
@@ -14,6 +15,7 @@ locals {
   st_name                  = "st${var.usecase}sftp${var.environment}001"
   automation_name          = "aa-${var.usecase}-${var.environment}-001"
   automation_schedule_name = "as-${var.usecase}-${var.environment}"
+  bkpol_name               = "bkpol-${var.usecase}-${var.environment}-001"
 }
 
 locals {
@@ -50,7 +52,7 @@ locals {
 
 locals {
   update_time_start = var.schedule_start
-  update_date = substr(time_offset.tomorrow.rfc3339, 0, 10)
-  update_timezone = var.region_timezone_map_locals[var.region]
-  update_time_stop = var.schedule_stop
+  update_date       = substr(time_offset.tomorrow.rfc3339, 0, 10)
+  update_timezone   = var.region_timezone_map_locals[var.region]
+  update_time_stop  = var.schedule_stop
 }

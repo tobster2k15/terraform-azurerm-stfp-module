@@ -79,13 +79,13 @@ variable "address_space" {
   description = "Address space"
   type        = list(string)
   default     = ["10.0.0.0/16"]
-  }
+}
 
 variable "address_prefix" {
   description = "Address prefixes"
   type        = list(string)
   default     = ["10.0.1.0/24"]
-  }
+}
 
 ### End Network Variables ###
 
@@ -126,12 +126,17 @@ variable "st_container_name" {
   default     = "default"
 }
 
-variable "retention_days"{ 
+variable "retention_days" {
   description = "Retention days"
   type        = number
   default     = 0
 }
 
+variable "allowed_ips" {
+  description = "Allowed external IPs"
+  type        = list(string)
+  default     = [""]
+}
 ### End Storage Account Variables ###
 variable "users" {
   description = "List of local SFTP user objects."
@@ -163,7 +168,7 @@ variable "automation_enabled" {
 variable "region_timezone_map" {
   description = "Adds a timezone to chosen region, works just as the naming process."
   type        = map(any)
-  default     = {
+  default = {
     northcentralus   = "America/North_Dakota/Center"
     southcentralus   = "Atlantic/South_Georgia"
     westcentral      = "America/St_Thomas"
@@ -199,7 +204,7 @@ variable "start_time" {
   default     = null
 }
 
-variable "expiry_time"{
+variable "expiry_time" {
   description = "Expiry time, format YYYY-MM-DDTHH:MM:SS+02:00"
   type        = string
   default     = null
@@ -232,7 +237,7 @@ variable "month_days_occurence" {
 variable "region_timezone_map_locals" {
   description = "Adds a timezone to chosen region for locals timing, works just as the naming process."
   type        = map(any)
-  default     = {
+  default = {
     northcentralus   = "CT"
     southcentralus   = "GMT-7"
     westcentral      = "GMT-6"
@@ -260,4 +265,19 @@ variable "schedule_stop" {
   description = "Stop time, format HH:MM"
   type        = string
   default     = "23:59"
+}
+#### End Automation Account Variables ###
+
+### Start Backup Variables ###
+
+variable "backup_enabled" {
+  description = "Enable backup"
+  type        = bool
+  default     = false
+}
+
+variable "backup_redudancy" {
+  description = "Backup redudancy"
+  type        = string
+  default     = "LocallyRedundant"
 }
