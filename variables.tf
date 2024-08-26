@@ -126,6 +126,12 @@ variable "st_container_name" {
   default     = "default"
 }
 
+variable "retention_days"{ 
+  description = "Retention days"
+  type        = number
+  default     = 0
+}
+
 ### End Storage Account Variables ###
 variable "users" {
   description = "List of local SFTP user objects."

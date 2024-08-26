@@ -26,8 +26,14 @@ resource "azurerm_storage_account" "storage" {
   enable_https_traffic_only        = true
   large_file_share_enabled         = false
   is_hns_enabled                   = true
-  sftp_enabled                     = true
+  sftp_enabled                     = false
   tags                             = var.tags
+  blob_properties {
+    delete_retention_policy {
+      days = var.retention_days == 0 ? null : var.retention_days
+    }
+
+
   identity {
     type = "SystemAssigned"
   }
@@ -288,3 +294,7 @@ resource "azurerm_automation_job_schedule" "sftp_off" {
   runbook_name            = azurerm_automation_runbook.sftp_disable[count.index].name
   schedule_name           = azurerm_automation_schedule.sftp_disable_daily[count.index].name
 }
+
+### End Automation Account (optional) ###
+
+### Backup Policy (optional) ###
