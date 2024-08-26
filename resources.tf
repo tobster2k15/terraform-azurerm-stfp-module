@@ -29,9 +29,12 @@ resource "azurerm_storage_account" "storage" {
   sftp_enabled                     = false
   tags                             = var.tags
   blob_properties {
-    delete_retention_policy {
-      days = var.retention_days == 0 ? null : var.retention_days
+    dynamic "delete_retention_policy" {
+    for_each = var.retention_days == 0 ? [] : [1]
+    content{
+      days = var.retention_days
     }
+  }
   }
   identity {
     type = "SystemAssigned"
