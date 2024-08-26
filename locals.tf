@@ -45,8 +45,6 @@ locals {
       auto_generated_private_key = try(tls_private_key.users_keys[key].private_key_pem, "")
       auto_generated_public_key  = try(tls_private_key.users_keys[key].public_key_openssh, "")
     }
-
-
   }
 }
 
