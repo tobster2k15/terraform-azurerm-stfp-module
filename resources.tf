@@ -25,7 +25,7 @@ resource "azurerm_storage_account" "storage" {
   cross_tenant_replication_enabled = false
   enable_https_traffic_only        = true
   large_file_share_enabled         = false
-  is_hns_enabled                   = true
+  # is_hns_enabled                   = true
   sftp_enabled                     = false
   tags                             = var.tags
   blob_properties {
