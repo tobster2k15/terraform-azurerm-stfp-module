@@ -302,48 +302,48 @@ resource "azurerm_automation_job_schedule" "sftp_off" {
 ### End Automation Account (optional) ###
 
 ### Backup Policy (optional) ###
-resource "azurerem_resource_group" "myrg_shd2"{
-  count               = var.backup_enabled == true ? 1 : 0
-  name                = local.rg_name_shd
-  location            = var.region
-  tags                = var.tags
-}
+# resource "azurerem_resource_group" "myrg_shd2"{
+#   count               = var.backup_enabled == true ? 1 : 0
+#   name                = local.rg_name_shd
+#   location            = var.region
+#   tags                = var.tags
+# }
 
-resource "azurerm_data_protection_backup_vault" "bvault" {
-  count               = var.backup_enabled == true ? 1 : 0
-  name                = "example-backup-vault"
-  resource_group_name = azurerm_resource_group.myrg_shd2[count.index].name
-  location            = azurerm_resource_group.myrg_shd2.location
-  datastore_type      = "VaultStore"
-  redundancy          = var.backup_redudancy
-  identity {
-    type = "SystemAssigned"
-  }
-}
+# resource "azurerm_data_protection_backup_vault" "bvault" {
+#   count               = var.backup_enabled == true ? 1 : 0
+#   name                = "example-backup-vault"
+#   resource_group_name = azurerm_resource_group.myrg_shd2[count.index].name
+#   location            = azurerm_resource_group.myrg_shd2.location
+#   datastore_type      = "VaultStore"
+#   redundancy          = var.backup_redudancy
+#   identity {
+#     type = "SystemAssigned"
+#   }
+# }
 
-resource "azurerm_role_assignment" "bck_role" {
-  count               = var.backup_enabled == true ? 1 : 0
-  scope                = azurerm_storage_account.storage.id
-  role_definition_name = "Storage Account Backup Contributor"
-  principal_id         = azurerm_data_protection_backup_vault.bvault.identity[0].principal_id
-}
+# resource "azurerm_role_assignment" "bck_role" {
+#   count               = var.backup_enabled == true ? 1 : 0
+#   scope                = azurerm_storage_account.storage.id
+#   role_definition_name = "Storage Account Backup Contributor"
+#   principal_id         = azurerm_data_protection_backup_vault.bvault.identity[0].principal_id
+# }
 
-resource "azurerm_data_protection_backup_policy_blob_storage" "bkpol" {
-  count              = var.backup_enabled == true ? 1 : 0
-  name               = local.bkpol_name
-  vault_id           = azurerm_data_protection_backup_vault.bvault[count.index].id
-  retention_duration = "P30D"
-}
+# resource "azurerm_data_protection_backup_policy_blob_storage" "bkpol" {
+#   count              = var.backup_enabled == true ? 1 : 0
+#   name               = local.bkpol_name
+#   vault_id           = azurerm_data_protection_backup_vault.bvault[count.index].id
+#   retention_duration = "P30D"
+# }
 
-resource "azurerm_data_protection_backup_instance_blob_storage" "bck_instance" {
-  count              = var.backup_enabled == true ? 1 : 0
-  name               = "example-backup-instance"
-  vault_id           = azurerm_data_protection_backup_vault.bvault[count.index].id
-  location           = azurerm_resource_group.myrg_shd2[count.index].location
-  storage_account_id = azurerm_storage_account.storage.id
-  backup_policy_id   = azurerm_data_protection_backup_policy_blob_storage.bkpol[count.index].id
+# resource "azurerm_data_protection_backup_instance_blob_storage" "bck_instance" {
+#   count              = var.backup_enabled == true ? 1 : 0
+#   name               = "example-backup-instance"
+#   vault_id           = azurerm_data_protection_backup_vault.bvault[count.index].id
+#   location           = azurerm_resource_group.myrg_shd2[count.index].location
+#   storage_account_id = azurerm_storage_account.storage.id
+#   backup_policy_id   = azurerm_data_protection_backup_policy_blob_storage.bkpol[count.index].id
 
-  depends_on = [azurerm_role_assignment.bck_role]
-}
+#   depends_on = [azurerm_role_assignment.bck_role]
+# }
 
 ### End Backup Policy (optional) ###
