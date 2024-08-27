@@ -15,6 +15,7 @@ locals {
   st_name                  = "st${var.usecase}sftp${var.environment}001"
   automation_name          = "aa-${var.usecase}-${var.environment}-001"
   automation_schedule_name = "as-${var.usecase}-${var.environment}"
+  bvault_name              = "bvault-${var.usecase}-${var.environment}-001"
   bkpol_name               = "bkpol-${var.usecase}-${var.environment}-001"
 }
 
