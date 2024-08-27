@@ -25,7 +25,7 @@ resource "azurerm_storage_account" "storage" {
   cross_tenant_replication_enabled = false
   enable_https_traffic_only        = true
   large_file_share_enabled         = false
-  # is_hns_enabled                   = true
+  is_hns_enabled                   = true
   sftp_enabled                     = true
   tags                             = var.tags
   blob_properties {
@@ -332,7 +332,7 @@ resource "azurerm_data_protection_backup_policy_blob_storage" "bkpol" {
   count              = var.backup_enabled == true ? 1 : 0
   name               = local.bkpol_name
   vault_id           = azurerm_data_protection_backup_vault.bvault[count.index].id
-  retention_duration = "P30D"
+  retention_duration = "P11M"
   depends_on = [azurerm_role_assignment.bck_role]
 }
 
