@@ -325,7 +325,7 @@ resource "azurerm_role_assignment" "bck_role" {
   count               = var.backup_enabled == true ? 1 : 0
   scope                = azurerm_storage_account.storage.id
   role_definition_name = "Storage Account Backup Contributor"
-  principal_id         = azurerm_data_protection_backup_vault.bvault[count.index].identity[0].principal_id
+  principal_id         = azurerm_data_protection_backup_vault.bvault[count.index].identity[*].principal_id
 }
 
 resource "azurerm_data_protection_backup_policy_blob_storage" "bkpol" {
