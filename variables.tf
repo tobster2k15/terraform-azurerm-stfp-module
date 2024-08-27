@@ -135,7 +135,7 @@ variable "retention_days" {
 variable "allowed_ips" {
   description = "Allowed external IPs"
   type        = list(string)
-  default     = [""]
+  default     = null
 }
 ### End Storage Account Variables ###
 variable "users" {
