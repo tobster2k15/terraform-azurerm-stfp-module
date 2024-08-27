@@ -26,7 +26,7 @@ resource "azurerm_storage_account" "storage" {
   enable_https_traffic_only        = true
   large_file_share_enabled         = false
   # is_hns_enabled                   = true
-  sftp_enabled                     = false
+  sftp_enabled                     = true
   tags                             = var.tags
   blob_properties {
     dynamic "delete_retention_policy" {
@@ -336,15 +336,15 @@ resource "azurerm_data_protection_backup_policy_blob_storage" "bkpol" {
   depends_on = [azurerm_role_assignment.bck_role]
 }
 
-# resource "azurerm_data_protection_backup_instance_blob_storage" "bck_instance" {
-#   count              = var.backup_enabled == true ? 1 : 0
-#   name               = "example-backup-instance"
-#   vault_id           = azurerm_data_protection_backup_vault.bvault[count.index].id
-#   location           = azurerm_resource_group.myrg_shd2[count.index].location
-#   storage_account_id = azurerm_storage_account.storage.id
-#   backup_policy_id   = azurerm_data_protection_backup_policy_blob_storage.bkpol[count.index].id
+resource "azurerm_data_protection_backup_instance_blob_storage" "bck_instance" {
+  count              = var.backup_enabled == true ? 1 : 0
+  name               = "example-backup-instance"
+  vault_id           = azurerm_data_protection_backup_vault.bvault[count.index].id
+  location           = azurerm_resource_group.myrg_shd2[count.index].location
+  storage_account_id = azurerm_storage_account.storage.id
+  backup_policy_id   = azurerm_data_protection_backup_policy_blob_storage.bkpol[count.index].id
 
-#   depends_on = [azurerm_role_assignment.bck_role]
-# }
+  depends_on = [azurerm_role_assignment.bck_role]
+}
 
 ### End Backup Policy (optional) ###
