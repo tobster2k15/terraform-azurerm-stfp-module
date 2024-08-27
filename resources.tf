@@ -313,7 +313,7 @@ resource "azurerm_data_protection_backup_vault" "bvault" {
   count               = var.backup_enabled == true ? 1 : 0
   name                = "example-backup-vault"
   resource_group_name = azurerm_resource_group.myrg_shd2[count.index].name
-  location            = azurerm_resource_group.myrg_shd2.location
+  location            = azurerm_resource_group.myrg_shd2[count.index].location
   datastore_type      = "VaultStore"
   redundancy          = var.backup_redudancy
   identity {
