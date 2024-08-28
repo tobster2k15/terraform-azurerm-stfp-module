@@ -207,7 +207,7 @@ resource "azurerm_role_assignment" "automation_rbac"{
 resource "azurerm_automation_runbook" "sftp_enable" {
   count                   = var.automation_enabled == true ? 1 : 0
   automation_account_name = azurerm_automation_account.automation[count.index].name
-  content                 = "az login --identity --username "${azurerm_automation_account.automation[count.index].identity[0].principal_id}"\r\n\r\n Set-AzContext -Subscription '${data_azurerm_subscription.current.subscription_id}'\r\n\r\n$resourceGroup = \"${azurerm_resource_group.myrg_shd.name}\"\r\n$storageAccount = \"${azurerm_storage_account.storage.name}\"\r\n\r\naz storage account update -g $resourceGroup -n $storageAccount --enable-sftp true"
+  content                 = "az login --identity --username '${azurerm_automation_account.automation[count.index].identity[0].principal_id}'\r\n\r\n Set-AzContext -Subscription '${data_azurerm_subscription.current.subscription_id}'\r\n\r\n$resourceGroup = \"${azurerm_resource_group.myrg_shd.name}\"\r\n$storageAccount = \"${azurerm_storage_account.storage.name}\"\r\n\r\naz storage account update -g $resourceGroup -n $storageAccount --enable-sftp true"
   location                = azurerm_resource_group.myrg_shd.location
   log_progress            = false
   log_verbose             = false
