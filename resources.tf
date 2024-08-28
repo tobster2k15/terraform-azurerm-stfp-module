@@ -352,6 +352,6 @@ resource "azurerm_role_assignment" "bck_role" {
 #   backup_policy_id   = azurerm_data_protection_backup_policy_blob_storage.bkpol[count.index].id
 
 #   depends_on = [azurerm_role_assignment.bck_role]
-}
+# }
 
 ### End Backup Policy (optional) ###
