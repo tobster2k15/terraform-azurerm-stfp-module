@@ -197,10 +197,17 @@ resource "azurerm_automation_account" "automation" {
   }
 }
 
+resource "azurerm_role_assignment" "automation_rbac"{
+  count               = var.automation_enabled == true ? 1 : 0
+  scope               = azurerm_storage_account.storage.id
+  role_definition_name = "Storage Account Contributor"
+  principal_id        = azurerm_automation_account.automation[count.index].identity[0].principal_id
+}
+
 resource "azurerm_automation_runbook" "sftp_enable" {
   count                   = var.automation_enabled == true ? 1 : 0
   automation_account_name = azurerm_automation_account.automation[count.index].name
-  content                 = "Connect-AzAccount\r\n\r\n$resourceGroup = \"${azurerm_resource_group.myrg_shd.name}\"\r\n$storageAccount = \"${azurerm_storage_account.storage.name}\"\r\n\r\naz storage account update -g $resourceGroup -n $storageAccount --enable-sftp true"
+  content                 = "Connect-AzAccount -Identity -AccountId ${azurerm_role_assignment.automation_rbac[count.index].id}\r\n\r\n$resourceGroup = \"${azurerm_resource_group.myrg_shd.name}\"\r\n$storageAccount = \"${azurerm_storage_account.storage.name}\"\r\n\r\naz storage account update -g $resourceGroup -n $storageAccount --enable-sftp true"
   location                = azurerm_resource_group.myrg_shd.location
   log_progress            = false
   log_verbose             = false
