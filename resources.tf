@@ -23,18 +23,18 @@ resource "azurerm_storage_account" "storage" {
   public_network_access_enabled    = true #Needs to be changed later on (portal), otherwise share can't be created
   allow_nested_items_to_be_public  = false
   cross_tenant_replication_enabled = false
-  enable_https_traffic_only        = true
+  https_traffic_only_enabled       = true
   large_file_share_enabled         = false
   is_hns_enabled                   = true
-  sftp_enabled                     = false
+  sftp_enabled                     = var.automation_enabled == true ? false : true
   tags                             = var.tags
   blob_properties {
     dynamic "delete_retention_policy" {
-    for_each = var.retention_days == 0 ? [] : [1]
-    content{
-      days = var.retention_days
+      for_each = var.retention_days == 0 ? [] : [1]
+      content {
+        days = var.retention_days
+      }
     }
-  }
   }
   identity {
     type = "SystemAssigned"
@@ -58,7 +58,7 @@ resource "azurerm_storage_account_network_rules" "stfw" {
   storage_account_id = azurerm_storage_account.storage.id
   default_action     = "Deny"
   bypass             = ["AzureServices"]
-  ip_rules           = var.allowed_ips 
+  ip_rules           = var.allowed_ips
   depends_on         = [azurerm_storage_container.mycontainer]
 }
 
@@ -123,6 +123,7 @@ resource "azurerm_virtual_network" "myvnet" {
   resource_group_name = azurerm_resource_group.myrg_vnet[count.index].name
   location            = azurerm_resource_group.myrg_vnet[count.index].location
   address_space       = var.address_space
+  tags                = var.tags
 }
 
 resource "azurerm_subnet" "mysubnet" {
@@ -192,16 +193,17 @@ resource "azurerm_automation_account" "automation" {
   name                = local.automation_name
   resource_group_name = azurerm_resource_group.myrg_shd.name
   sku_name            = "Basic"
+  tags                = var.tags
   identity {
     type = "SystemAssigned"
   }
 }
 
-resource "azurerm_role_assignment" "automation_rbac"{
-  count               = var.automation_enabled == true ? 1 : 0
-  scope               = azurerm_storage_account.storage.id
+resource "azurerm_role_assignment" "automation_rbac" {
+  count                = var.automation_enabled == true ? 1 : 0
+  scope                = azurerm_storage_account.storage.id
   role_definition_name = "Storage Account Contributor"
-  principal_id        = azurerm_automation_account.automation[count.index].identity[0].principal_id
+  principal_id         = azurerm_automation_account.automation[count.index].identity[0].principal_id
 }
 
 resource "azurerm_automation_runbook" "sftp_enable" {
@@ -214,6 +216,7 @@ resource "azurerm_automation_runbook" "sftp_enable" {
   name                    = "sftp_enable"
   resource_group_name     = azurerm_resource_group.myrg_shd.name
   runbook_type            = "PowerShell72"
+  tags                    = var.tags
   depends_on = [
     azurerm_automation_account.automation,
   ]
@@ -229,6 +232,7 @@ resource "azurerm_automation_runbook" "sftp_disable" {
   name                    = "sftp_disable"
   resource_group_name     = azurerm_resource_group.myrg_shd.name
   runbook_type            = "PowerShell72"
+  tags                    = var.tags
   depends_on = [
     azurerm_automation_account.automation,
   ]
@@ -309,11 +313,11 @@ resource "azurerm_automation_job_schedule" "sftp_off" {
 ### End Automation Account (optional) ###
 
 ### Backup Policy (optional) ###
-resource "azurerm_resource_group" "myrg_shd2"{
-  count               = var.backup_enabled == true ? 1 : 0
-  name                = local.rg_name_shd
-  location            = var.region
-  tags                = var.tags
+resource "azurerm_resource_group" "myrg_shd2" {
+  count    = var.backup_enabled == true ? 1 : 0
+  name     = local.rg_name_shd
+  location = var.region
+  tags     = var.tags
 }
 
 resource "azurerm_data_protection_backup_vault" "bvault" {
@@ -323,13 +327,14 @@ resource "azurerm_data_protection_backup_vault" "bvault" {
   location            = azurerm_resource_group.myrg_shd2[count.index].location
   datastore_type      = "VaultStore"
   redundancy          = var.backup_redudancy
+  tags                = var.tags
   identity {
     type = "SystemAssigned"
   }
 }
 
 resource "azurerm_role_assignment" "bck_role" {
-  count               = var.backup_enabled == true ? 1 : 0
+  count                = var.backup_enabled == true ? 1 : 0
   scope                = azurerm_storage_account.storage.id
   role_definition_name = "Storage Account Backup Contributor"
   principal_id         = azurerm_data_protection_backup_vault.bvault[count.index].identity[0].principal_id
