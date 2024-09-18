@@ -184,6 +184,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "filelink" {
 
 ### Automation Account (optional) ###
 resource "time_offset" "tomorrow" {
+  count       = var.automation_enabled == true ? 1 : 0
   offset_days = 1
 }
 
