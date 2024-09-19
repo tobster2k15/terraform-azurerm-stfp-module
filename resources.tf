@@ -1,5 +1,5 @@
 resource "azurerm_resource_group" "myrg_shd" {
-  name     = local.rg_name
+  name     = var.rg_name == null ? local.rg_name : var.rg_name
   location = var.region
   tags     = var.tags
 }

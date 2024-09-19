@@ -1,4 +1,10 @@
 ## Start Naming variables ## 
+variable "rg_name" {
+  description = "predefined name for resource group"
+  type        = string
+  default     = null
+}
+
 variable "business_unit" {
   description = "Business unit"
   type        = string
