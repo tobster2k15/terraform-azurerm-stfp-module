@@ -60,6 +60,11 @@ resource "azurerm_storage_account_network_rules" "stfw" {
   bypass             = ["AzureServices"]
   ip_rules           = var.allowed_ips
   depends_on         = [azurerm_storage_container.mycontainer]
+  lifecycle         {
+    ignore_changes = [
+      private_link_access 
+    ]
+  }
 }
 
 resource "azurerm_storage_account_local_user" "users" {
