@@ -56,7 +56,7 @@ resource "azurerm_storage_container" "mycontainer" {
 # Deny Traffic from Public Networks with white list exceptions
 resource "azurerm_storage_account_network_rules" "stfw" {
   storage_account_id = azurerm_storage_account.storage.id
-  default_action     = "Deny"
+  default_action     = var.allowed_ips != null ? "Deny" : "Allow"
   bypass             = ["AzureServices"]
   ip_rules           = var.allowed_ips
   depends_on         = [azurerm_storage_container.mycontainer]
