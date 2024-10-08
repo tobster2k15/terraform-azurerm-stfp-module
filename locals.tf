@@ -1,7 +1,7 @@
 # #Namingconvention: Counter wird bei den einzelnen Namen mit angegeben
 locals {
-  rg_name     = "rg-${var.OPE}-${var.usecase}-${var.environment}-001"
-  rg_name_shd = "rg-${var.OPE}-${var.usecase}-shd-001"
+  rg_name     = "rg-${var.business_unit}-${var.usecase}-${var.environment}-001"
+  rg_name_shd = "rg-${var.business_unit}-${var.usecase}-shd-001"
 
   nic_name     = "nic-${var.usecase}-${var.environment}-"
   rg_vnet_name = "rg-vnet-${var.usecase}-${var.environment}-${var.region_prefix_map[var.region]}-001"
