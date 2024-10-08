@@ -272,6 +272,18 @@ variable "schedule_stop" {
   type        = string
   default     = "23:59"
 }
+
+variable "second_schedule_start" {
+  description = "optional, second time"
+  type        = string
+  default     = null
+}
+
+variable "second_schedule_stop"{
+  description = "optional, second time"
+  type        = string
+  default     = null
+}
 #### End Automation Account Variables ###
 
 ### Start Backup Variables ###
