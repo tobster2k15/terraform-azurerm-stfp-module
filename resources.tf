@@ -189,7 +189,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "filelink" {
 
 ### Automation Account (optional) ###
 resource "time_offset" "tomorrow" {
-  offset_days = 5
+  offset_days = 1
 }
 
 resource "azurerm_automation_account" "automation" {
