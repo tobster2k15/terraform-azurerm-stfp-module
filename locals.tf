@@ -52,10 +52,8 @@ locals {
 }
 
 locals {
-  update_time_start = var.schedule_start
   update_date       = substr(time_offset.tomorrow.rfc3339, 0, 10)
   update_timezone   = var.region_timezone_map_locals[var.region]
-  update_time_stop  = var.schedule_stop
-  update_time_start_new = var.second_schedule_start
-  update_time_stop_new  = var.second_schedule_stop
+  # update_time_start_new = var.second_schedule_start
+  # update_time_stop_new  = var.second_schedule_stop
 }

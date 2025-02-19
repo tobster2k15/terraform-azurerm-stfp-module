@@ -263,14 +263,14 @@ variable "region_timezone_map_locals" {
 
 variable "schedule_start" {
   description = "Start time, format HH:MM"
-  type        = string
-  default     = "00:00"
+  type        = list(string)
+  default     = ["00:00"]
 }
 
 variable "schedule_stop" {
   description = "Stop time, format HH:MM"
-  type        = string
-  default     = "23:59"
+  type        = list(string)
+  default     = ["23:59"]
 }
 
 variable "second_schedule_start" {
